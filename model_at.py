@@ -111,16 +111,16 @@ class SAF(chainer.Chain):
                 b = b1
 
         elif mode == 0:
-            l, s, b1 = self.first_forward(x, num_lm, test=True)
+            l, s, b1 = self.first_forward(x, num_lm)
             for i in range(n_step):
                 if i + 1 == n_step:
                     xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
-                    l1, s1, y, b = self.recurrent_forward(xm, lm, sm, test=True)
+                    l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
                     accuracy = y.data * target.data
                     return xp.sum(accuracy)
                 else:
                     xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
-                    l1, s1, y, b = self.recurrent_forward(xm, lm, sm, test=True)
+                    l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
                 l = l1
                 s = s1
 
@@ -149,9 +149,8 @@ class SAF(chainer.Chain):
             l_list[i] = l.data
         return
 
-    def first_forward(self, x, num_lm, test=False):
-        x.volatile = test
-        self.rnn_1(Variable(xp.zeros((num_lm, self.n_unit)).astype(xp.float32), volatile=test))
+    def first_forward(self, x, num_lm):
+        self.rnn_1(Variable(xp.zeros((num_lm, self.n_unit)).astype(xp.float32)))
         h2 = F.relu(self.l_norm_cc1(self.context_cnn_1(F.average_pooling_2d(x, 4, stride=4))))
         h3 = F.relu(self.l_norm_cc2(self.context_cnn_2(F.max_pooling_2d(h2, 2, stride=2))))
         h4 = F.relu(self.l_norm_cc3(self.context_cnn_3(F.max_pooling_2d(h3, 2, stride=2))))
@@ -160,14 +159,14 @@ class SAF(chainer.Chain):
 
         l = F.sigmoid(self.attention_loc(h5))
         s = F.sigmoid(self.attention_scale(h5))
-        b = F.sigmoid(self.baseline(Variable(h5.data, volatile=test)))
+        b = F.sigmoid(self.baseline(Variable(h5.data)))
         return l, s, b
 
-    def recurrent_forward(self, xm, lm, sm, test=False):
+    def recurrent_forward(self, xm, lm, sm):
         ls = xp.concatenate([lm.data, sm.data], axis=1)
-        hgl = F.relu(self.glimpse_loc(Variable(ls, volatile=test)))
+        hgl = F.relu(self.glimpse_loc(Variable(ls)))
 
-        hg1 = F.relu(self.l_norm_c1(self.glimpse_cnn_1(Variable(xm, volatile=test))))
+        hg1 = F.relu(self.l_norm_c1(self.glimpse_cnn_1(Variable(xm))))
         hg2 = F.relu(self.l_norm_c2(self.glimpse_cnn_2(hg1)))
         hg3 = F.relu(self.l_norm_c3(self.glimpse_cnn_3(F.max_pooling_2d(hg2, 2, stride=2))))
         hgf = F.relu(self.glimpse_full(hg3))
