@@ -115,12 +115,12 @@ class SAF(chainer.Chain):
             l, s, b1 = self.first_forward(x, num_lm)
             for i in range(n_step):
                 if i + 1 == n_step:
-                    xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
+                    xm, lm, sm = self.make_img(images, l, s, num_lm, random=0)
                     l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
                     accuracy = y.data * target.data
                     return xp.sum(accuracy)
                 else:
-                    xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
+                    xm, lm, sm = self.make_img(images, l, s, num_lm, random=0)
                     l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
                 l = l1
                 s = s1
