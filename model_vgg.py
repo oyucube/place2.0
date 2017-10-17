@@ -125,7 +125,7 @@ class SAF(chainer.Chain):
                 l = l1
                 s = s1
 
-    def use_model(self, x, t):
+    def use_model(self, x, t, image):
         self.reset()
         num_lm = x.data.shape[0]
         n_step = self.n_step
@@ -134,7 +134,7 @@ class SAF(chainer.Chain):
         l, s, b1 = self.first_forward(x, num_lm)
         for i in range(n_step):
             if i + 1 == n_step:
-                xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
+                xm, lm, sm = self.make_img(image, l, s, num_lm, random=0)
                 l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
                 s_list[i] = s1.data
                 l_list[i] = l1.data
@@ -142,7 +142,7 @@ class SAF(chainer.Chain):
                 s_list = xp.power(10, s_list - 1)
                 return xp.sum(accuracy, axis=1), l_list, s_list
             else:
-                xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
+                xm, lm, sm = self.make_img(image, l, s, num_lm, random=0)
                 l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
             l = l1
             s = s1

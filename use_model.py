@@ -24,7 +24,7 @@ import importlib
 import image_dataset
 import socket
 from PIL import Image, ImageDraw, ImageFont
-
+from chainer.links import VGG16Layers
 
 def get_batch(ds, index, repeat):
     nt = ds.num_target
@@ -40,6 +40,28 @@ def get_batch(ds, index, repeat):
     bbx = chainer.Variable(xp.asarray(xp.tile(bbx, (repeat, 1, 1, 1))), volatile="off")
     bbt = chainer.Variable(xp.asarray(xp.tile(bbt, (repeat, 1))), volatile="off")
     return bbx, bbt
+
+
+def vgg_extract(vgg_m, ds, index, repeat):
+    nt = ds.num_target
+    batch_size = index.shape[0]
+    return_t = np.zeros((batch_size, nt))
+    return_i = np.empty((batch_size, 3, 256, 256))
+    image_list = []
+    for bi in range(batch_size):
+        image_list.append(ds.get_vgg(index[bi]))
+        return_t[bi][ds[index[bi]][1]] = 1
+        return_i[bi] = ds[index[bi]][0]
+
+    with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
+        feature = vgg_m.extract(image_list, layers=["conv5_3"])["conv5_3"]
+
+    return_t = return_t.astype(np.float32)
+    return_i = return_i.reshape(batch_size, 3, 256, 256).astype(np.float32)
+    return_i = chainer.Variable(xp.asarray(xp.tile(return_i, (repeat, 1, 1, 1))))
+    return_x = chainer.Variable(xp.asarray(xp.tile(feature.data, (repeat, 1, 1, 1))))
+    return_t = chainer.Variable(xp.asarray(xp.tile(return_t, (repeat, 1))))
+    return return_x, return_t, return_i
 
 
 def draw_attention(d_img, d_l_list, d_s_list, index, save="", acc=""):
@@ -132,6 +154,11 @@ if test_b > test_max:
 
 # モデルの作成
 model_file_name = args.am
+if model_file_name.find("vgg"):
+    vgg = True
+    vgg_model = VGG16Layers()
+else:
+    vgg = False
 sss = importlib.import_module(model_file_name)
 model = sss.SAF(n_out=n_target, img_size=img_size, var=train_var, n_step=num_step, gpu_id=gpu_id)
 # model load
@@ -148,8 +175,12 @@ if gpu_id >= 0:
     model.to_gpu()
 
 perm = np.random.permutation(test_max)
-x, t = get_batch(val_dataset, perm[0:test_b], 1)
-acc, l_list, s_list = model.use_model(x, t)
+if vgg:
+    x, t, image = vgg_extract(vgg_model, val_dataset, perm[0:test_b], 1)
+    acc, l_list, s_list = model.use_model(x, t, image)
+else:
+    x, t = get_batch(val_dataset, perm[0:test_b], 1)
+    acc, l_list, s_list = model.use_model(x, t)
 print(acc)
 test_b = 10
 for i in range(test_b):

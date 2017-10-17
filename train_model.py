@@ -25,7 +25,7 @@ import image_dataset
 import socket
 import gc
 from chainer.links import VGG16Layers
-from PIL import Image
+from PIL import Image, ImageDraw
 
 
 def get_batch(ds, index, repeat):
@@ -65,6 +65,23 @@ def vgg_extract(vgg_m, ds, index, repeat):
     return_t = chainer.Variable(xp.asarray(xp.tile(return_t, (repeat, 1))))
     return return_x, return_t, return_i
 
+
+def draw_attention(d_img, d_l_list, d_s_list, index, save="", acc=""):
+    draw = ImageDraw.Draw(d_img)
+    color_list = ["red", "yellow", "blue", "green"]
+    size = 256
+    for j in range(l_list.shape[0]):
+        l = d_l_list[j][index]
+        s = d_s_list[j][index]
+        print(l)
+        p1 = (size * (l - s / 2))
+        p2 = (size * (l + s / 2))
+        p1[0] = size - p1[0]
+        p2[0] = size - p2[0]
+        print([p1[0], p1[1], p2[0], p2[1]])
+        draw.rectangle([p1[0], p1[1], p2[0], p2[1]], outline=color_list[j])
+    if len(save) > 0:
+        img.save(save + ".png")
 
 #  引数分解
 parser = argparse.ArgumentParser()
@@ -262,5 +279,22 @@ for epoch in range(n_epoch):
     plt.savefig(log_dir + "/loss.png")
     plt.close("all")
 
+    try:
+        num_out_images = 10
+        image_path = log_dir + "/" + str(epoch)
+        os.mkdir(image_path)
+        perm = np.random.permutation(test_max)
+        if vgg:
+            x, t, image = vgg_extract(vgg_model, val_dataset, perm[0:num_out_images], 1)
+            acc, l_list, s_list = model.use_model(x, t, image)
+        else:
+            x, t = get_batch(val_dataset, perm[0:num_out_images], 1)
+            acc, l_list, s_list = model.use_model(x, t)
+        for i in range(test_b):
+            save_filename = image_path + "/" + str(i)
+            img = val_dataset.get_image(perm[i])
+            draw_attention(img, l_list, s_list, i, save=save_filename, acc="")
+    except OSError:
+        pass
 with open(log_filename, mode='a') as fh:
     fh.write("last acc:{}  max_acc:{}\n".format(acc1_array[n_epoch - 1], max_acc))
