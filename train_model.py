@@ -69,11 +69,11 @@ def vgg_extract(vgg_m, ds, index, repeat):
 #  引数分解
 parser = argparse.ArgumentParser()
 
-parser.add_argument("-b", "--batch_size", type=int, default=3,
+parser.add_argument("-b", "--batch_size", type=int, default=50,
                     help="batch size")
 parser.add_argument("-e", "--epoch", type=int, default=30,
                     help="iterate training given epoch times")
-parser.add_argument("-m", "--num_l", type=int, default=2,
+parser.add_argument("-m", "--num_l", type=int, default=20,
                     help="a number of sample ")
 parser.add_argument("-s", "--step", type=int, default=2,
                     help="look step")
@@ -109,7 +109,7 @@ gpu_id = args.gpu
 # naruto ならGPUモード
 if socket.gethostname() == "naruto":
     gpu_id = 0
-    log_dir = "/home/y-murata/storage/place397/"
+    log_dir = "/home/y-murata/storage/place2.0/"
     train_dataset = image_dataset.ImageDataset("/home/y-murata/data_256", label_file)
     val_dataset = image_dataset.ValidationDataset("/home/y-murata/val_256", label_file)
 else:
