@@ -48,20 +48,23 @@ def vgg_extract(vgg_m, ds, index, repeat):
     nt = ds.num_target
     batch_size = index.shape[0]
     return_t = np.zeros((batch_size, nt))
+    return_i = np.empty((batch_size, 3, 256, 256))
     image_list = []
     for bi in range(batch_size):
         image_list.append(ds.get_vgg(index[bi]))
+        return_t[bi][ds[index[bi]][1]] = 1
+        return_i[bi] = ds[index[bi]][0]
 
     with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
         feature = vgg_m.extract(image_list, layers=["conv5_3"])["conv5_3"]
     print("done2")
 
-    for bi in range(batch_size):
-        return_t[bi][ds[index[bi]][1]] = 1
     return_t = return_t.astype(np.float32)
+    return_i = return_i.reshape(batch_size, 3, 256, 256).astype(np.float32)
+    return_i = chainer.Variable(xp.asarray(xp.tile(return_i, (repeat, 1, 1, 1))))
     return_x = chainer.Variable(xp.asarray(xp.tile(feature.data, (repeat, 1, 1, 1))))
     return_t = chainer.Variable(xp.asarray(xp.tile(return_t, (repeat, 1))))
-    return return_x, return_t
+    return return_x, return_t, return_i
 
 
 #  引数分解
@@ -82,7 +85,7 @@ parser.add_argument("-g", "--gpu", type=int, default=-1,
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",
                     help="data id")
-parser.add_argument("-a", "--am", type=str, default="model_dram",
+parser.add_argument("-a", "--am", type=str, default="model_vgg",
                     help="attention model")
 # load model id
 parser.add_argument("-l", "--l", type=str, default="",
@@ -183,13 +186,16 @@ for epoch in range(n_epoch):
     #   学習    
     perm = np.random.permutation(data_max)
     for i in tqdm(range(0, data_max, train_b), ncols=60):
+        model.cleargrads()
         if vgg:
-            x, t = vgg_extract(vgg_model, train_dataset, perm[i:i+train_b], num_lm)
+            x, t, image = vgg_extract(vgg_model, train_dataset, perm[i:i+train_b], num_lm)
+            loss_func = model(x, t, mode=1, images=image)
+
         else:
             x, t = get_batch(train_dataset, perm[i:i+train_b], num_lm)
             # 順伝播
-        model.cleargrads()
-        loss_func = model(x, t, mode=1)
+
+            loss_func = model(x, t, mode=1)
 
         loss_array[epoch] = loss_func.data
         loss_func.backward()
@@ -205,20 +211,21 @@ for epoch in range(n_epoch):
     perm2 = np.random.permutation(data_max) 
     for i in range(0, test_b, 100):
         # 順伝播
-        # TODO volatile の削除
         # TODO test mode　のconfig 制御
         if vgg:
-            x, t = vgg_extract(vgg, val_dataset, perm[i:i+100], 1)
+            x, t, image = vgg_extract(vgg, val_dataset, perm[i:i+100], 1)
+            with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
+                acc += model(x, t, mode=0,images=image)
+            x, t, image = vgg_extract(vgg, train_dataset, perm[i:i+100], 1)
+            with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
+                t_acc += model(x, t, mode=0, images=image)
+
         else:
             x, t = get_batch(val_dataset, perm[i:i+100], 1)
-        with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
-            acc += model(x, t, mode=0)
-        if vgg:
-            x, t = vgg_extract(vgg, train_dataset, perm[i:i+100], 1)
-        else:
-            x, t = get_batch(train_dataset, perm[i:i+100], 1)
-        with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
-            t_acc += model(x, t, mode=0)
+            with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
+                acc += model(x, t, mode=0)
+            x, t = get_batch(train_dataset, perm[i:i + 100], 1)
+
     del x, t
     gc.collect()
 
