@@ -214,10 +214,10 @@ for epoch in range(n_epoch):
         # 順伝播
         # TODO test mode　のconfig 制御
         if vgg:
-            x, t, image = vgg_extract(vgg, val_dataset, perm[i:i+100], 1)
+            x, t, image = vgg_extract(vgg_model, val_dataset, perm[i:i+100], 1)
             with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
-                acc += model(x, t, mode=0,images=image)
-            x, t, image = vgg_extract(vgg, train_dataset, perm[i:i+100], 1)
+                acc += model(x, t, mode=0, images=image)
+            x, t, image = vgg_extract(vgg_model, train_dataset, perm[i:i+100], 1)
             with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
                 t_acc += model(x, t, mode=0, images=image)
 
