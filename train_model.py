@@ -208,7 +208,7 @@ for epoch in range(n_epoch):
         if vgg:
             x, t, image = vgg_extract(vgg_model, train_dataset, perm[i:i+train_b], num_lm)
             loss_func = model(x, t, mode=1, images=image)
-
+            del image
         else:
             x, t = get_batch(train_dataset, perm[i:i+train_b], num_lm)
             # 順伝播
@@ -228,8 +228,6 @@ for epoch in range(n_epoch):
     perm = np.random.permutation(test_max)
     perm2 = np.random.permutation(data_max) 
     for i in range(0, test_b, 100):
-        # 順伝播
-        # TODO test mode　のconfig 制御
         if vgg:
             x, t, image = vgg_extract(vgg_model, val_dataset, perm[i:i+100], 1)
             with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
@@ -237,7 +235,7 @@ for epoch in range(n_epoch):
             x, t, image = vgg_extract(vgg_model, train_dataset, perm[i:i+100], 1)
             with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
                 t_acc += model(x, t, mode=0, images=image)
-
+            del image
         else:
             x, t = get_batch(val_dataset, perm[i:i+100], 1)
             with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
