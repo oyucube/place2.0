@@ -57,7 +57,6 @@ def vgg_extract(vgg_m, ds, index, repeat):
 
     with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
         feature = vgg_m.extract(image_list, layers=["conv5_3"])["conv5_3"]
-    print("done2")
 
     return_t = return_t.astype(np.float32)
     return_i = return_i.reshape(batch_size, 3, 256, 256).astype(np.float32)
@@ -149,6 +148,8 @@ optimizer.setup(model)
 if gpu_id >= 0:
     chainer.cuda.get_device_from_id(gpu_id).use()
     model.to_gpu()
+    if vgg:
+        vgg_model.to_gpu()
 
 # ログの設定　精度、エラー率
 acc1_array = np.full_like(np.zeros(n_epoch), np.nan)
