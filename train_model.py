@@ -276,23 +276,23 @@ for epoch in range(n_epoch):
     plt.plot(loss_array)
     plt.savefig(log_dir + "/loss.png")
     plt.close("all")
-
-    try:
-        num_out_images = 10
-        image_path = log_dir + "/" + str(epoch)
-        os.mkdir(image_path)
-        perm = np.random.permutation(test_max)
-        if vgg:
-            x, t, image = vgg_extract(vgg_model, val_dataset, perm[0:num_out_images], 1)
-            acc, l_list, s_list = model.use_model(x, t, image)
-        else:
-            x, t = get_batch(val_dataset, perm[0:num_out_images], 1)
-            acc, l_list, s_list = model.use_model(x, t)
-        for i in range(test_b):
-            save_filename = image_path + "/" + str(i)
-            img = val_dataset.get_image(perm[i])
-            draw_attention(img, l_list, s_list, i, save=save_filename, acc="")
-    except OSError:
-        pass
+    #
+    # try:
+    #     num_out_images = 10
+    #     image_path = log_dir + "/" + str(epoch)
+    #     os.mkdir(image_path)
+    #     perm = np.random.permutation(test_max)
+    #     if vgg:
+    #         x, t, image = vgg_extract(vgg_model, val_dataset, perm[0:num_out_images], 1)
+    #         acc, l_list, s_list = model.use_model(x, t, image)
+    #     else:
+    #         x, t = get_batch(val_dataset, perm[0:num_out_images], 1)
+    #         acc, l_list, s_list = model.use_model(x, t)
+    #     for i in range(test_b):
+    #         save_filename = image_path + "/" + str(i)
+    #         img = val_dataset.get_image(perm[i])
+    #         draw_attention(img, l_list, s_list, i, save=save_filename, acc="")
+    # except OSError:
+    #     passK
 with open(log_filename, mode='a') as fh:
     fh.write("last acc:{}  max_acc:{}\n".format(acc1_array[n_epoch - 1], max_acc))
