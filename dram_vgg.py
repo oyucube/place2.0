@@ -123,7 +123,7 @@ class SAF(chainer.Chain):
                     l1, y, b = self.recurrent_forward(xm, lm)
                 l = l1
 
-    def use_model(self, x, t):
+    def use_model(self, x, t, images):
         self.reset()
         num_lm = x.data.shape[0]
         n_step = self.n_step

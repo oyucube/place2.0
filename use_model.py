@@ -89,12 +89,12 @@ parser = argparse.ArgumentParser()
 # load model id
 
 # * *********************************************    config    ***************************************************** * #
-parser.add_argument("-a", "--am", type=str, default="model_bn",
+parser.add_argument("-a", "--am", type=str, default="dram_vgg",
                     help="attention model")
-parser.add_argument("-l", "--l", type=str, default="bn_s4",
+parser.add_argument("-l", "--l", type=str, default="dram_vgg",
                     help="load model name")
 test_b = 100
-num_step = 4
+num_step = 2
 label_file = "5"
 
 # * **************************************************************************************************************** * #

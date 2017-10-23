@@ -17,7 +17,7 @@ from env import xp
 from bnlstm import BNLSTM
 
 
-class SAF(chainer.Chain):
+class DRAM(chainer.Chain):
     def __init__(self, n_units=256, n_out=0, img_size=112, var=0.18, n_step=2, gpu_id=-1):
         super(SAF, self).__init__(
             # the size of the inputs to each layer will be inferred
@@ -199,3 +199,7 @@ class SAF(chainer.Chain):
         else:
             xm = make_sampled_image.generate_xm_rgb_dram(lm.data, x.data, num_lm, g_size=self.gsize)
         return xm, lm
+
+
+class SAF(DRAM):
+    pass
