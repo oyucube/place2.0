@@ -6,7 +6,8 @@ import make_sampled_image
 
 class SAF(DRAM):
     def make_img(self, x, l, num_lm, random=0):
-        sm = xp.repeat([xp.log10(40 / 256) - 1], num_lm, axis=0)
+        s = xp.array([xp.log10(40 / 256) - 1])
+        sm = xp.repeat(s, num_lm, axis=0)
         if random == 0:
             lm = Variable(xp.clip(l.data, 0, 1))
         else:
