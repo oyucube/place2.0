@@ -248,8 +248,8 @@ for epoch in range(n_epoch):
     gc.collect()
 
     # 記録
-    acc1_array[epoch] = cuda.to_cpu(acc / test_b)
-    train_acc[epoch] = cuda.to_cpu(t_acc / test_b)
+    acc1_array[epoch] = (acc / test_b)
+    train_acc[epoch] = (t_acc / test_b)
     print("test_acc:{:1.4f} train_acc:{:1.4f}".format(acc1_array[epoch], train_acc[epoch]))
     best = ""
     if acc > max_acc:
