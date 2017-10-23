@@ -146,7 +146,8 @@ test_b = test_max
 
 # モデルの作成
 model_file_name = args.am
-if model_file_name.find("vgg"):
+vgg = False
+if model_file_name.find("vgg") != -1:
     vgg = True
     vgg_model = VGG16Layers()
 else:
@@ -214,8 +215,6 @@ for epoch in range(n_epoch):
             del image
         else:
             x, t = get_batch(train_dataset, perm[i:i+train_b], num_lm)
-            # 順伝播
-
             loss_func = model(x, t, mode=1)
 
         loss_array[epoch] = loss_func.data
