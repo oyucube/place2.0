@@ -146,11 +146,14 @@ test_b = test_max
 
 # モデルの作成
 model_file_name = args.am
+if model_file_name.find("vgg"):
+    vgg = True
+    vgg_model = VGG16Layers()
+else:
+    vgg = False
+
 sss = importlib.import_module(model_file_name)
 model = sss.SAF(n_out=n_target, img_size=img_size, var=train_var, n_step=num_step, gpu_id=gpu_id)
-vgg = True # 仮設定
-if vgg:
-    vgg_model = VGG16Layers()
 
 # model load
 if len(args.l) != 0:
