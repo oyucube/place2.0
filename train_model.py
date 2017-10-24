@@ -242,6 +242,7 @@ for epoch in range(n_epoch):
             x, t = get_batch(val_dataset, perm[i:i+100], 1)
             with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
                 acc += model(x, t, mode=0)
+            x, t = get_batch(train_dataset, perm[i:i + 100], 1)
             with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
                 t_acc += model(x, t, mode=0)
             x, t = get_batch(train_dataset, perm[i:i + 100], 1)
