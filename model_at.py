@@ -16,9 +16,10 @@ import make_sampled_image
 from env import xp
 from bnlstm import BNLSTM
 
-class SAF(chainer.Chain):
+
+class BASE(chainer.Chain):
     def __init__(self, n_units=256, n_out=0, img_size=112, var=0.18, n_step=2, gpu_id=-1):
-        super(SAF, self).__init__(
+        super(BASE, self).__init__(
             # the size of the inputs to each layer will be inferred
             # glimpse network
             # 切り取られた画像を処理する部分　位置情報 (glimpse loc)と画像特徴量の積を出力
@@ -213,3 +214,7 @@ class SAF(chainer.Chain):
         else:
             xm = make_sampled_image.generate_xm_rgb(lm.data, sm.data, x.data, num_lm, g_size=self.gsize)
         return xm, lm, sm
+
+
+class SAF(BASE):
+    pass
