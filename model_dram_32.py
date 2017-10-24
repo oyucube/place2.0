@@ -6,7 +6,7 @@ import make_sampled_image
 
 class SAF(DRAM):
     def __init__(self, n_units=256, n_out=0, img_size=112, var=0.18, n_step=2, gpu_id=-1):
-        super(BASE, self).__init__(
+        super(DRAM, self).__init__(
             # the size of the inputs to each layer will be inferred
             # glimpse network
             # 切り取られた画像を処理する部分　位置情報 (glimpse loc)と画像特徴量の積を出力
