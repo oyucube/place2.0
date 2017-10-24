@@ -42,7 +42,6 @@ class DRAM(chainer.Chain):
 
             # 注意領域を選択するネットワーク
             attention_loc=L.Linear(n_units, 2),
-            attention_scale=L.Linear(n_units, 1),
 
             # 入力画像を処理するネットワーク
             context_cnn_1=L.Convolution2D(3, 32, 3),  # 64 to 62
