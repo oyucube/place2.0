@@ -2,6 +2,8 @@ from model_at import BASE
 from chainer import Variable
 from env import xp
 import make_sampled_image
+import chainer.functions as F
+import chainer.links as L
 
 
 class SAF(BASE):
