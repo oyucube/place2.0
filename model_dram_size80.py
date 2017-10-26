@@ -10,7 +10,7 @@ class SAF(DRAM):
         self.reset()
         num_lm = x.data.shape[0]
         n_step = self.n_step
-        s_list = xp.ones((n_step, num_lm, 1)) * (40 / self.img_size)
+        s_list = xp.ones((n_step, num_lm, 1)) * (80 / self.img_size)
         l_list = xp.empty((n_step, num_lm, 2))
         l, b1 = self.first_forward(x, num_lm)
         for i in range(n_step):
@@ -28,7 +28,7 @@ class SAF(DRAM):
         return
 
     def make_img(self, x, l, num_lm, random=0):
-        s = xp.log10(xp.ones((1, 1)) * 40 / 256) + 1
+        s = xp.log10(xp.ones((1, 1)) * 80 / 256) + 1
         sm = xp.repeat(s, num_lm, axis=0)
 
         if random == 0:

@@ -26,20 +26,21 @@ import socket
 from PIL import Image, ImageDraw, ImageFont
 from chainer.links import VGG16Layers
 
+
 def get_batch(ds, index, repeat):
     nt = ds.num_target
     # print(index)
     batch_size = index.shape[0]
-    bbx = np.empty((batch_size, 3, 256, 256))
-    bbt = np.zeros((batch_size, nt))
+    return_x = np.empty((batch_size, 3, 256, 256))
+    return_t = np.zeros((batch_size, nt))
     for bi in range(batch_size):
-        bbx[bi] = ds[index[bi]][0]
-        bbt[bi][ds[index[bi]][1]] = 1
-    bbx = bbx.reshape(batch_size, 3, 256, 256).astype(np.float32)
-    bbt = bbt.astype(np.float32)
-    bbx = chainer.Variable(xp.asarray(xp.tile(bbx, (repeat, 1, 1, 1))), volatile="off")
-    bbt = chainer.Variable(xp.asarray(xp.tile(bbt, (repeat, 1))), volatile="off")
-    return bbx, bbt
+        return_x[bi] = ds[index[bi]][0]
+        return_t[bi][ds[index[bi]][1]] = 1
+    return_x = return_x.reshape(batch_size, 3, 256, 256).astype(np.float32)
+    return_t = return_t.astype(np.float32)
+    return_x = chainer.Variable(xp.asarray(xp.tile(return_x, (repeat, 1, 1, 1))))
+    return_t = chainer.Variable(xp.asarray(xp.tile(return_t, (repeat, 1))))
+    return return_x, return_t
 
 
 def vgg_extract(vgg_m, ds, index, repeat):
@@ -89,12 +90,12 @@ parser = argparse.ArgumentParser()
 # load model id
 
 # * *********************************************    config    ***************************************************** * #
-parser.add_argument("-a", "--am", type=str, default="dram_vgg",
+parser.add_argument("-a", "--am", type=str, default="model_saf_32",
                     help="attention model")
-parser.add_argument("-l", "--l", type=str, default="dram_vgg",
+parser.add_argument("-l", "--l", type=str, default="v1",
                     help="load model name")
 test_b = 100
-num_step = 2
+num_step = 4
 label_file = "5"
 
 # * **************************************************************************************************************** * #
@@ -154,7 +155,7 @@ if test_b > test_max:
 
 # モデルの作成
 model_file_name = args.am
-if model_file_name.find("vgg"):
+if model_file_name.find("vgg") != -1:
     vgg = True
     vgg_model = VGG16Layers()
 else:
@@ -163,7 +164,7 @@ sss = importlib.import_module(model_file_name)
 model = sss.SAF(n_out=n_target, img_size=img_size, var=train_var, n_step=num_step, gpu_id=gpu_id)
 # model load
 if len(args.l) != 0:
-    print("load model model/my{}{}.model".format(args.l, model_id))
+    print("load model model/best{}{}.model".format(args.l, label_file))
     serializers.load_npz('model/best' + args.l + label_file + '.model', model)
 else:
     print("load model!!!")
