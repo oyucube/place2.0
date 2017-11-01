@@ -10,11 +10,10 @@ from __future__ import print_function
 import chainer
 import chainer.functions as F
 import chainer.links as L
-from chainer import Variable, cuda
-import numpy as np
+from chainer import Variable
 import make_sampled_image
 from env import xp
-from bnlstm import BNLSTM
+from modelfile.bnlstm import BNLSTM
 
 
 class BASE(chainer.Chain):

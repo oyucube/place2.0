@@ -12,7 +12,7 @@ class NoBetaBatchNormalizationFunction(function.Function):
         self.eps = eps
 
     def check_type_forward(self, in_types):
-        n_in = in_types.size().eval()
+        n_in = in_types.size()
         if n_in != 2 and n_in != 4:
             raise type_check.InvalidType(
                 "%s or %s" % (in_types.size() == 2, in_types.size() == 4),
@@ -201,7 +201,7 @@ class CellState(function.Function):
             x_type.shape[0] == c_type.shape[0],
             x_type.shape[1] == 4 * c_type.shape[1],
         )
-        for i in range(2, c_type.ndim.eval()):
+        for i in range(2, c_type.ndim):
             type_check.expect(x_type.shape[i] == c_type.shape[i])
 
     def forward(self, inputs):
@@ -289,7 +289,7 @@ class BiasFunction(function.Function):
             x_type.dtype == np.float32,
             x_type.ndim >= 2,
         )
-        if n_in.eval() == 3:
+        if n_in == 3:
             b_type = in_types[1]
             type_check.expect(
                 b_type.dtype == np.float32,

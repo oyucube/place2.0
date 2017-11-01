@@ -1,13 +1,14 @@
-from model_at import BASE
+from modelfile.model_at import BASE
 from chainer import Variable
 from env import xp
 import make_sampled_image
 import chainer.functions as F
 import chainer.links as L
+from modelfile.bnlstm import BNLSTM
 
 
 class SAF(BASE):
-    def __init__(self, n_units=512, n_out=0, img_size=112, var=0.18, n_step=2, gpu_id=-1):
+    def __init__(self, n_units=256, n_out=0, img_size=112, var=0.18, n_step=2, gpu_id=-1):
         super(BASE, self).__init__(
             # the size of the inputs to each layer will be inferred
             # glimpse network
@@ -54,7 +55,7 @@ class SAF(BASE):
         else:
             self.use_gpu = False
         self.img_size = img_size
-        self.gsize = 32
+        self.gsize = 20
         self.train = True
         self.var = 0.015
         self.vars = 0.015
@@ -65,12 +66,11 @@ class SAF(BASE):
         self.n_step = n_step
 
     def first_forward(self, x, num_lm):
-        self.rnn_1(Variable(xp.zeros((num_lm, self.n_unit)).astype(xp.float32)))
         h2 = F.relu(self.l_norm_cc1(self.context_cnn_1(F.average_pooling_2d(x, 4, stride=4))))
         h3 = F.relu(self.l_norm_cc2(self.context_cnn_2(F.max_pooling_2d(h2, 2, stride=2))))
         h4 = F.relu(self.l_norm_cc3(self.context_cnn_3(F.max_pooling_2d(h3, 2, stride=2))))
         h4r = F.relu(self.context_full(h4))
-        h5 = F.relu(self.rnn_2(h4r))
+        h5 = F.relu(self.rnn_1(h4r))
 
         l = F.sigmoid(self.attention_loc(h5))
         s = F.sigmoid(self.attention_scale(h5))
@@ -86,11 +86,11 @@ class SAF(BASE):
         hg3 = F.relu(self.l_norm_c3(self.glimpse_cnn_3(F.max_pooling_2d(hg2, 2, stride=2))))
         hgf = F.relu(self.glimpse_full(hg3))
 
-        hr1 = F.relu(self.rnn_1(hgl * hgf))
+        hr2 = F.relu(self.rnn_1(hgl * hgf))
         # ベクトルの積
-        hr2 = F.relu(self.rnn_2(hr1))
         l = F.sigmoid(self.attention_loc(hr2))
         s = F.sigmoid(self.attention_scale(hr2))
-        y = F.softmax(self.class_full(hr1))
+        y = F.softmax(self.class_full(hr2))
         b = F.sigmoid(self.baseline(Variable(hr2.data)))
         return l, s, y, b
+

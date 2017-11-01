@@ -101,14 +101,14 @@ parser.add_argument("-g", "--gpu", type=int, default=-1,
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",
                     help="data id")
-parser.add_argument("-a", "--am", type=str, default="model_vgg",
+parser.add_argument("-a", "--am", type=str, default="model_test1",
                     help="attention model")
 # load model id
 parser.add_argument("-l", "--l", type=str, default="",
                     help="load model name")
 
 # model save id
-parser.add_argument("-o", "--filename", type=str, default="v1",
+parser.add_argument("-o", "--filename", type=str, default="v2",
                     help="prefix of output file names")
 args = parser.parse_args()
 
@@ -153,7 +153,7 @@ if model_file_name.find("vgg") != -1:
 else:
     vgg = False
 
-sss = importlib.import_module(model_file_name)
+sss = importlib.import_module("modelfile." + model_file_name)
 model = sss.SAF(n_out=n_target, img_size=img_size, var=train_var, n_step=num_step, gpu_id=gpu_id)
 
 # model load
