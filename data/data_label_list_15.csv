@@ -1,0 +1,15 @@
+bathroom,0,45
+bedroom,1,52
+bookstore,2,60
+church/indoor,3,90
+closet,4,95
+computer_room,5,100
+dining_room,6,121
+engine_room,7,133
+locker_room,8,219
+physics_laboratory,9,264
+playroom,10,269
+recreation_room,11,281
+server_room,12,298
+shopping_mall/indoor,13,302
+throne_room,14,331

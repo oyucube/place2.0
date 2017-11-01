@@ -90,13 +90,13 @@ parser = argparse.ArgumentParser()
 # load model id
 
 # * *********************************************    config    ***************************************************** * #
-parser.add_argument("-a", "--am", type=str, default="model_saf_32",
+parser.add_argument("-a", "--am", type=str, default="model_at",
                     help="attention model")
-parser.add_argument("-l", "--l", type=str, default="v1",
+parser.add_argument("-l", "--l", type=str, default="scalable",
                     help="load model name")
 test_b = 100
-num_step = 4
-label_file = "5"
+num_step = 2
+label_file = "15"
 
 # * **************************************************************************************************************** * #
 
