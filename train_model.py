@@ -101,14 +101,14 @@ parser.add_argument("-g", "--gpu", type=int, default=-1,
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",
                     help="data id")
-parser.add_argument("-a", "--am", type=str, default="model_test1",
+parser.add_argument("-a", "--am", type=str, default="model_test2",
                     help="attention model")
 # load model id
 parser.add_argument("-l", "--l", type=str, default="",
                     help="load model name")
 
 # model save id
-parser.add_argument("-o", "--filename", type=str, default="v2",
+parser.add_argument("-o", "--filename", type=str, default="v1",
                     help="prefix of output file names")
 args = parser.parse_args()
 
@@ -266,10 +266,10 @@ for epoch in range(n_epoch):
     np.save(log_dir + "/train_acc.npy", train_acc)
     # モデルの保存
     if gpu_id >= 0:
-        serializers.save_npz(log_dir + "/" + best + file_id + train_id + '.model', model.to_cpu())
+        serializers.save_npz(log_dir + "/" + best + file_id + "_" + train_id + '.model', model.to_cpu())
         model.to_gpu()
     else:
-        serializers.save_npz(log_dir + "/" + best + file_id + train_id + '.model', model)
+        serializers.save_npz(log_dir + "/" + best + file_id + "_" + train_id + '.model', model)
     # グラフの作成と保存
     plt.figure()
     plt.ylim([0, 1])
