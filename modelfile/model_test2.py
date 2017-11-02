@@ -20,7 +20,7 @@ class SAF(BASE):
             glimpse_loc=L.Linear(3, n_units),
 
             # baseline network 強化学習の期待値を学習し、バイアスbとする
-            baseline=L.Linear(2 * n_units, 1),
+            baseline=L.Linear(n_units, 1),
 
             l_norm_c1=L.BatchNormalization(32),
             l_norm_c2=L.BatchNormalization(64),
@@ -90,7 +90,6 @@ class SAF(BASE):
         hgf = F.relu(self.glimpse_full(hg3))
 
         hrl = F.relu(self.rnn_1(hgl * hgf))
-
         hr2 = F.concat((self.whole_image, hrl), axis=1)
 
         # ベクトルの積

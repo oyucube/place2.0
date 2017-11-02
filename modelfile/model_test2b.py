@@ -20,7 +20,7 @@ class SAF(BASE):
             glimpse_loc=L.Linear(3, n_units),
 
             # baseline network 強化学習の期待値を学習し、バイアスbとする
-            baseline=L.Linear(2 * n_units, 1),
+            baseline=L.Linear(n_units, 1),
 
             l_norm_c1=L.BatchNormalization(32),
             l_norm_c2=L.BatchNormalization(64),
@@ -49,7 +49,7 @@ class SAF(BASE):
             l_norm_cc2=L.BatchNormalization(64),
             l_norm_cc3=L.BatchNormalization(64),
 
-            class_full=L.Linear(2 * n_units, n_out)
+            class_full=L.Linear(n_units, n_out)
         )
 
         #
@@ -69,16 +69,19 @@ class SAF(BASE):
         # r determine the rate of position
         self.r = 0.5
         self.n_step = n_step
+        self.whole_image = None
 
     def first_forward(self, x, num_lm):
         h2 = F.relu(self.l_norm_cc1(self.context_cnn_1(F.average_pooling_2d(x, 4, stride=4))))
         h3 = F.relu(self.l_norm_cc2(self.context_cnn_2(F.max_pooling_2d(h2, 2, stride=2))))
         h4 = F.relu(self.l_norm_cc3(self.context_cnn_3(F.max_pooling_2d(h3, 2, stride=2))))
         h4r = F.relu(self.context_full(h4))
-        h5 = F.relu(self.rnn_1(h4r))
+        self.whole_image = h4r
+        hl = F.relu(self.rnn_1(h4r))
+        h5 = F.concat((self.whole_image, hl), axis=1)
 
         a1 = F.relu(self.a_norm_1(self.attention_1(h5)))
-        a2 = F.relu(self.a_norm_1(self.attention_1(a1)))
+        a2 = F.relu(self.a_norm_2(self.attention_2(a1)))
         l = F.sigmoid(self.attention_loc(a2))
         s = F.sigmoid(self.attention_scale(a2))
         b = F.sigmoid(self.baseline(Variable(a2.data)))
@@ -93,13 +96,14 @@ class SAF(BASE):
         hg3 = F.relu(self.l_norm_c3(self.glimpse_cnn_3(F.max_pooling_2d(hg2, 2, stride=2))))
         hgf = F.relu(self.glimpse_full(hg3))
 
-        hr2 = F.relu(self.rnn_1(hgl * hgf))
+        hrl = F.relu(self.rnn_1(hgl * hgf))
+        hr2 = F.concat((self.whole_image, hrl), axis=1)
         # ベクトルの積
         a1 = F.relu(self.a_norm_1(self.attention_1(hr2)))
-        a2 = F.relu(self.a_norm_1(self.attention_1(a1)))
+        a2 = F.relu(self.a_norm_2(self.attention_2(a1)))
         l = F.sigmoid(self.attention_loc(a2))
         s = F.sigmoid(self.attention_scale(a2))
         y = F.softmax(self.class_full(a2))
-        b = F.sigmoid(self.baseline(Variable(hr2.data)))
+        b = F.sigmoid(self.baseline(Variable(a2.data)))
         return l, s, y, b
 
