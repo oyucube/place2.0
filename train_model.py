@@ -70,7 +70,7 @@ def draw_attention(d_img, d_l_list, d_s_list, index, save="", acc=""):
     draw = ImageDraw.Draw(d_img)
     color_list = ["red", "yellow", "blue", "green"]
     size = 256
-    for j in range(l_list.shape[0]):
+    for j in range(d_l_list.shape[0]):
         l = d_l_list[j][index]
         s = d_s_list[j][index]
         print(l)
@@ -81,7 +81,7 @@ def draw_attention(d_img, d_l_list, d_s_list, index, save="", acc=""):
         print([p1[0], p1[1], p2[0], p2[1]])
         draw.rectangle([p1[0], p1[1], p2[0], p2[1]], outline=color_list[j])
     if len(save) > 0:
-        img.save(save + ".png")
+        Image.save(save + ".png")
 
 #  引数分解
 parser = argparse.ArgumentParser()
@@ -101,14 +101,14 @@ parser.add_argument("-g", "--gpu", type=int, default=-1,
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",
                     help="data id")
-parser.add_argument("-a", "--am", type=str, default="model_test1a",
+parser.add_argument("-a", "--am", type=str, default="model_bnlstm",
                     help="attention model")
 # load model id
 parser.add_argument("-l", "--l", type=str, default="",
                     help="load model name")
 
 # model save id
-parser.add_argument("-o", "--filename", type=str, default="v2",
+parser.add_argument("-o", "--filename", type=str, default="v1",
                     help="prefix of output file names")
 args = parser.parse_args()
 

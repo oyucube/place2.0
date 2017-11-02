@@ -1,10 +1,21 @@
-from modelfile.model_at import BASE
-from chainer import Variable
-from env import xp
-import make_sampled_image
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Oct 26 04:46:24 2016
+
+@author: oyu
+"""
+
+from __future__ import print_function
+
+import chainer
 import chainer.functions as F
 import chainer.links as L
+from chainer import Variable
+import make_sampled_image
+from env import xp
 from modelfile.bnlstm import BNLSTM
+
+from modelfile.model_at import BASE
 
 
 class SAF(BASE):
@@ -20,19 +31,19 @@ class SAF(BASE):
             glimpse_loc=L.Linear(3, n_units),
 
             # baseline network 強化学習の期待値を学習し、バイアスbとする
-            baseline=L.Linear(2 * n_units, 1),
+            baseline=L.Linear(n_units, 1),
 
             l_norm_c1=L.BatchNormalization(32),
             l_norm_c2=L.BatchNormalization(64),
             l_norm_c3=L.BatchNormalization(128),
 
             # 記憶を用いるLSTM部分
-            rnn_1=L.LSTM(n_units, n_units),
-            rnn_2=L.LSTM(n_units, n_units),
+            rnn_1=BNLSTM(n_units, n_units),
+            rnn_2=BNLSTM(n_units, n_units),
 
             # 注意領域を選択するネットワーク
-            attention_loc=L.Linear(2 * n_units, 2),
-            attention_scale=L.Linear(2 * n_units, 1),
+            attention_loc=L.Linear(n_units, 2),
+            attention_scale=L.Linear(n_units, 1),
 
             # 入力画像を処理するネットワーク
             context_cnn_1=L.Convolution2D(3, 32, 3),  # 64 to 62
@@ -44,7 +55,7 @@ class SAF(BASE):
             l_norm_cc2=L.BatchNormalization(64),
             l_norm_cc3=L.BatchNormalization(64),
 
-            class_full=L.Linear(2 * n_units, n_out)
+            class_full=L.Linear(n_units, n_out)
         )
 
         #
@@ -62,40 +73,5 @@ class SAF(BASE):
         self.n_unit = n_units
         self.num_class = n_out
         # r determine the rate of position
-        self.r = n_step
+        self.r = 0.5
         self.n_step = n_step
-        self.whole_image = None
-
-    def first_forward(self, x, num_lm):
-        h2 = F.relu(self.l_norm_cc1(self.context_cnn_1(F.average_pooling_2d(x, 4, stride=4))))
-        h3 = F.relu(self.l_norm_cc2(self.context_cnn_2(F.max_pooling_2d(h2, 2, stride=2))))
-        h4 = F.relu(self.l_norm_cc3(self.context_cnn_3(F.max_pooling_2d(h3, 2, stride=2))))
-        h4r = F.relu(self.context_full(h4))
-        self.whole_image = h4r
-        hl = F.relu(self.rnn_1(h4r))
-        h5 = F.concat((self.whole_image, hl), axis=1)
-
-        l = F.sigmoid(self.attention_loc(h5))
-        s = F.sigmoid(self.attention_scale(h5))
-        b = F.sigmoid(self.baseline(Variable(h5.data)))
-        return l, s, b
-
-    def recurrent_forward(self, xm, lm, sm):
-        ls = xp.concatenate([lm.data, sm.data], axis=1)
-        hgl = F.relu(self.glimpse_loc(Variable(ls)))
-
-        hg1 = F.relu(self.l_norm_c1(self.glimpse_cnn_1(Variable(xm))))
-        hg2 = F.relu(self.l_norm_c2(self.glimpse_cnn_2(hg1)))
-        hg3 = F.relu(self.l_norm_c3(self.glimpse_cnn_3(F.max_pooling_2d(hg2, 2, stride=2))))
-        hgf = F.relu(self.glimpse_full(hg3))
-
-        hrl = F.relu(self.rnn_1(hgl * hgf))
-
-        hr2 = F.concat((self.whole_image, hrl), axis=1)
-
-        # ベクトルの積
-        l = F.sigmoid(self.attention_loc(hr2))
-        s = F.sigmoid(self.attention_scale(hr2))
-        y = F.softmax(self.class_full(hr2))
-        b = F.sigmoid(self.baseline(Variable(hr2.data)))
-        return l, s, y, b

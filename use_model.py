@@ -90,13 +90,13 @@ parser = argparse.ArgumentParser()
 # load model id
 
 # * *********************************************    config    ***************************************************** * #
-parser.add_argument("-a", "--am", type=str, default="model_at",
+parser.add_argument("-a", "--am", type=str, default="model_test2",
                     help="attention model")
-parser.add_argument("-l", "--l", type=str, default="scalable",
+parser.add_argument("-l", "--l", type=str, default="test2__",
                     help="load model name")
 test_b = 100
 num_step = 2
-label_file = "15"
+label_file = "5"
 
 # * **************************************************************************************************************** * #
 
@@ -160,7 +160,7 @@ if model_file_name.find("vgg") != -1:
     vgg_model = VGG16Layers()
 else:
     vgg = False
-sss = importlib.import_module(model_file_name)
+sss = importlib.import_module("modelfile." + model_file_name)
 model = sss.SAF(n_out=n_target, img_size=img_size, var=train_var, n_step=num_step, gpu_id=gpu_id)
 # model load
 if len(args.l) != 0:

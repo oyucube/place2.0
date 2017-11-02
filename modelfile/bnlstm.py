@@ -126,7 +126,7 @@ class NoBetaBatchNormalization(link.Link):
         self.eps = eps
 
     def __call__(self, x):
-        use_batch_mean = not chainer.config.train
+        use_batch_mean = chainer.config.train
 
         if use_batch_mean:
             func = NoBetaBatchNormalizationFunction(self.eps)
