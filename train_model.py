@@ -101,14 +101,14 @@ parser.add_argument("-g", "--gpu", type=int, default=-1,
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",
                     help="data id")
-parser.add_argument("-a", "--am", type=str, default="model_test2b",
+parser.add_argument("-a", "--am", type=str, default="model_test1a",
                     help="attention model")
 # load model id
 parser.add_argument("-l", "--l", type=str, default="",
                     help="load model name")
 
 # model save id
-parser.add_argument("-o", "--filename", type=str, default="v1",
+parser.add_argument("-o", "--filename", type=str, default="v2",
                     help="prefix of output file names")
 args = parser.parse_args()
 
