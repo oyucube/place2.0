@@ -101,7 +101,7 @@ parser.add_argument("-g", "--gpu", type=int, default=-1,
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",
                     help="data id")
-parser.add_argument("-a", "--am", type=str, default="model_bnlstm",
+parser.add_argument("-a", "--am", type=str, default="model_saf_32",
                     help="attention model")
 # load model id
 parser.add_argument("-l", "--l", type=str, default="",

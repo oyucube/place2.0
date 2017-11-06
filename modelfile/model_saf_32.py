@@ -1,4 +1,4 @@
-from model_at import BASE
+from modelfile.model_at import BASE
 from chainer import Variable
 from env import xp
 import make_sampled_image

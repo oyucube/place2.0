@@ -71,7 +71,7 @@ class SAF(BASE):
         else:
             self.use_gpu = False
         self.img_size = img_size
-        self.gsize = 20
+        self.gsize = 64
         self.train = True
         self.var = 0.015
         self.vars = 0.015
