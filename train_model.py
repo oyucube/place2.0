@@ -262,8 +262,8 @@ for epoch in range(n_epoch):
     with open(log_filename, mode='a') as fh:
         fh.write("test_acc:{:1.4f} train_acc:{:1.4f}\n".format(acc1_array[epoch], train_acc[epoch]))
 
-    np.save(log_dir + "/test_acc.npy", acc1_array)
-    np.save(log_dir + "/train_acc.npy", train_acc)
+    np.save(log_dir + "/" + file_id + "test.npy", acc1_array)
+    np.save(log_dir + "/" + file_id + "train_acc.npy", train_acc)
     # モデルの保存
     if gpu_id >= 0:
         serializers.save_npz(log_dir + "/" + best + file_id + "_" + train_id + '.model', model.to_cpu())
@@ -276,10 +276,10 @@ for epoch in range(n_epoch):
     p1 = plt.plot(acc1_array, color="green")
     p2 = plt.plot(train_acc, color="blue")
     plt.legend((p1[0], p2[0]), ("test", "train"), loc=2)
-    plt.savefig(log_dir + "/acc.png")
+    plt.savefig(log_dir + "/" + file_id + "acc.png")
     plt.figure()
     plt.plot(loss_array)
-    plt.savefig(log_dir + "/loss.png")
+    plt.savefig(log_dir + "/" + file_id + "loss.png")
     plt.close("all")
     #
     # try:
