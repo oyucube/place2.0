@@ -255,12 +255,12 @@ for epoch in range(n_epoch):
     train_acc[epoch] = (t_acc / test_b)
     print("test_acc:{:1.4f} train_acc:{:1.4f}".format(acc1_array[epoch], train_acc[epoch]))
     best = ""
-    if acc > max_acc:
-        max_acc = acc
+    if acc1_array[epoch] > max_acc:
+        max_acc = acc1_array[epoch]
         best = "best"
     # 分類精度の保存
     with open(log_filename, mode='a') as fh:
-        fh.write("test_acc:{:1.4f} train_acc:{:1.4f}".format(acc1_array[epoch], train_acc[epoch]))
+        fh.write("test_acc:{:1.4f} train_acc:{:1.4f}\n".format(acc1_array[epoch], train_acc[epoch]))
 
     np.save(log_dir + "/test_acc.npy", acc1_array)
     np.save(log_dir + "/train_acc.npy", train_acc)
