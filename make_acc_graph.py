@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-acc_list = ["scale20_test", "dram20_test", "dram40_test", "dram80_test"]
+acc_list = ["scale20_test", "p1_test", "p2_test", "p2a_test", "p2b_test", "bnlstm_test", "p1m20_test", "p2m20_test"]
 
 plt.figure()
 plt.xlim([0, 30])

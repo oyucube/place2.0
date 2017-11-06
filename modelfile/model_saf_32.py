@@ -6,6 +6,9 @@ import chainer.functions as F
 import chainer.links as L
 
 
+#
+# aaa
+#
 class SAF(BASE):
     def __init__(self, n_units=256, n_out=0, img_size=112, var=0.18, n_step=2, gpu_id=-1):
         super(BASE, self).__init__(
