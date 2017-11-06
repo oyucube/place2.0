@@ -80,6 +80,9 @@ class SAF(BASE):
         self.n_step = n_step
         self.whole_image=None
 
+    def reset(self):
+        self.rnn_1.reset_state()
+
     def first_forward(self, x, num_lm):
         h2 = F.relu(self.l_norm_cc1(self.context_cnn_1(F.average_pooling_2d(x, 4, stride=4))))
         h3 = F.relu(self.l_norm_cc2(self.context_cnn_2(F.max_pooling_2d(h2, 2, stride=2))))
