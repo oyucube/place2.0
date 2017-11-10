@@ -90,9 +90,9 @@ parser = argparse.ArgumentParser()
 # load model id
 
 # * *********************************************    config    ***************************************************** * #
-parser.add_argument("-a", "--am", type=str, default="model_test2",
+parser.add_argument("-a", "--am", type=str, default="model_at",
                     help="attention model")
-parser.add_argument("-l", "--l", type=str, default="test2__",
+parser.add_argument("-l", "--l", type=str, default="b10m100_",
                     help="load model name")
 test_b = 100
 num_step = 2

@@ -98,17 +98,19 @@ parser.add_argument("-v", "--var", type=float, default=0.02,
                     help="sample variation")
 parser.add_argument("-g", "--gpu", type=int, default=-1,
                     help="use gpu")
+parser.add_argument("-c", "--crop", type=int, default=0,
+                    help="use crop")
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",
                     help="data id")
-parser.add_argument("-a", "--am", type=str, default="model_saf_32",
+parser.add_argument("-a", "--am", type=str, default="model_test2a32",
                     help="attention model")
 # load model id
 parser.add_argument("-l", "--l", type=str, default="",
                     help="load model name")
 
 # model save id
-parser.add_argument("-o", "--filename", type=str, default="v1",
+parser.add_argument("-o", "--filename", type=str, default="v2",
                     help="prefix of output file names")
 args = parser.parse_args()
 
@@ -127,11 +129,17 @@ gpu_id = args.gpu
 if socket.gethostname() == "naruto":
     gpu_id = 0
     log_dir = "/home/y-murata/storage/place2.0/"
-    train_dataset = image_dataset.ImageDataset("/home/y-murata/data_256", label_file)
+    if args.crop == 1:
+        train_dataset = image_dataset.CropImageDataset("/home/y-murata/data_256", label_file)
+    else:
+        train_dataset = image_dataset.ImageDataset("/home/y-murata/data_256", label_file)
     val_dataset = image_dataset.ValidationDataset("/home/y-murata/val_256", label_file)
 else:
     log_dir = ""
-    train_dataset = image_dataset.ImageDataset(r"C:\Users\waka-lab\Documents\place365\data_256", label_file)
+    if args.crop == 1:
+        train_dataset = image_dataset.CropImageDataset(r"C:\Users\waka-lab\Documents\place365\data_256", label_file)
+    else:
+        train_dataset = image_dataset.ImageDataset(r"C:\Users\waka-lab\Documents\place365\data_256", label_file)
     val_dataset = image_dataset.ValidationDataset(r"C:\Users\waka-lab\Documents\place365\val_256", label_file)
 
 xp = cuda.cupy if gpu_id >= 0 else np
