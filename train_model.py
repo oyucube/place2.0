@@ -192,18 +192,18 @@ out_file_name = log_dir + "/log"
 
 log_filename = out_file_name + '.txt'
 f = open(log_filename, 'w')
-f.write("{} class recognition\nclass:{} use {} data set".format(num_class, target_c, model_id))
-f.write("model:{}".format(model_file_name))
-f.write("parameter")
-f.write("step:{}\nnum_sample:{} \nbatch_size{}\nvar:{}".format(num_step, num_lm, train_b, train_var))
-f.write("log dir:{}".format(out_file_name))
-f.write("going to train {} epoch".format(n_epoch))
+f.write("{} class recognition\nclass:{} use {} data set\n".format(num_class, target_c, model_id))
+f.write("model:{}\n".format(model_file_name))
+f.write("parameter\n")
+f.write("step:{} samples:{} batch_size{} var:{} crop:{}\n".format(num_step, num_lm, train_b, train_var, args.crop == 1))
+f.write("log dir:{}\n".format(out_file_name))
+f.write("going to train {} epoch\n".format(n_epoch))
 f.close()  # ファイルを閉じる
 
 print("{} class recognition\nclass:{} use {} data set".format(num_class, target_c, model_id))
 print("model:{}".format(model_file_name))
-print("parameter")
-print("step:{} num_sample:{} batch_size:{} var:{}".format(num_step, num_lm, train_b, train_var))
+print("parameter\n")
+print("step:{} sample:{} batch_size:{} var:{} crop:{}".format(num_step, num_lm, train_b, train_var, args.crop == 1))
 print("log dir:{}".format(log_dir))
 print("going to train {} epoch".format(n_epoch))
 
