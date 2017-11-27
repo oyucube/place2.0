@@ -103,15 +103,17 @@ parser.add_argument("-c", "--crop", type=int, default=0,
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",
                     help="data id")
-parser.add_argument("-a", "--am", type=str, default="model_test2a32",
+parser.add_argument("-a", "--am", type=str, default="model_rc",
                     help="attention model")
 # load model id
 parser.add_argument("-l", "--l", type=str, default="",
                     help="load model name")
 
 # model save id
-parser.add_argument("-o", "--filename", type=str, default="v2",
+parser.add_argument("-o", "--filename", type=str, default="v",
                     help="prefix of output file names")
+parser.add_argument("-p", "--logmode", type=int, default=1,
+                    help="log mode")
 args = parser.parse_args()
 
 file_id = args.filename
@@ -186,19 +188,20 @@ train_acc = np.full_like(np.zeros(n_epoch), np.nan)
 loss_array = np.full_like(np.zeros(n_epoch), np.nan)
 max_acc = 0
 date_id = datetime.datetime.now().strftime("%m%d%H%M")
-log_dir = log_dir + "log/" + train_id + file_id + date_id
-os.mkdir(log_dir)
-out_file_name = log_dir + "/log"
+if args.logmode == 1:
+    log_dir = log_dir + "log/" + train_id + file_id + date_id
+    os.mkdir(log_dir)
+    out_file_name = log_dir + "/log"
 
-log_filename = out_file_name + '.txt'
-f = open(log_filename, 'w')
-f.write("{} class recognition\nclass:{} use {} data set\n".format(num_class, target_c, model_id))
-f.write("model:{}\n".format(model_file_name))
-f.write("parameter\n")
-f.write("step:{} samples:{} batch_size{} var:{} crop:{}\n".format(num_step, num_lm, train_b, train_var, args.crop == 1))
-f.write("log dir:{}\n".format(out_file_name))
-f.write("going to train {} epoch\n".format(n_epoch))
-f.close()  # ファイルを閉じる
+    log_filename = out_file_name + '.txt'
+    f = open(log_filename, 'w')
+    f.write("{} class recognition\nclass:{} use {} data set\n".format(num_class, target_c, model_id))
+    f.write("model:{}\n".format(model_file_name))
+    f.write("parameter\n")
+    f.write("step:{} samples:{} batch_size{} var:{} crop:{}\n".format(num_step, num_lm, train_b, train_var, args.crop == 1))
+    f.write("log dir:{}\n".format(out_file_name))
+    f.write("going to train {} epoch\n".format(n_epoch))
+    f.close()  # ファイルを閉じる
 
 print("{} class recognition\nclass:{} use {} data set".format(num_class, target_c, model_id))
 print("model:{}".format(model_file_name))

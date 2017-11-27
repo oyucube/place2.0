@@ -1,13 +1,39 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-acc_list = ["scale20_c15_test", "test2a32_test", "test2a64_test"]
+mean_list = ["try1", "try2", "try3", "try4", "try5"]
+acc_list = ["dram20_test", "dram40_test", "dram80_test"]
+
+arr = np.zeros((5, 30))
+i = 0
+for item in mean_list:
+    acc = np.load("graph/" + item + ".npy")
+    arr[i] = acc
+    i += 1
+print(arr)
+
+mean = arr.mean(axis=0)
+std = arr.std(axis=0)
+print("mean")
+print(mean)
+
+print("std")
+print(std)
+
 
 plt.figure()
-plt.xlim([0, 50])
+plt.xlim([0, 30])
+plt.plot(arr[0], label="pre")
+plt.errorbar(range(30), mean, yerr=std, label="average")
+plt.legend()
+plt.savefig("graph/test.png")
+
+plt.figure()
+plt.xlim([0, 30])
+plt.errorbar(range(30), mean, yerr=std, label="average_test")
 for item in acc_list:
-    acc = np.load("buf/" + item + ".npy")
+    acc = np.load("graph/" + item + ".npy")
     plt.plot(acc, label=item)
 #plt.legend(loc="lower left")
 plt.legend()
-plt.savefig("buf/graph.png")
+plt.savefig("graph/graph.png")
