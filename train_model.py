@@ -98,7 +98,7 @@ parser.add_argument("-v", "--var", type=float, default=0.02,
                     help="sample variation")
 parser.add_argument("-g", "--gpu", type=int, default=-1,
                     help="use gpu")
-parser.add_argument("-c", "--crop", type=int, default=0,
+parser.add_argument("-c", "--crop", type=int, default=1,
                     help="use crop")
 # train id
 parser.add_argument("-i", "--id", type=str, default="5",

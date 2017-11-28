@@ -90,11 +90,11 @@ parser = argparse.ArgumentParser()
 # load model id
 
 # * *********************************************    config    ***************************************************** * #
-parser.add_argument("-a", "--am", type=str, default="model_at",
+parser.add_argument("-a", "--am", type=str, default="model_rc",
                     help="attention model")
-parser.add_argument("-l", "--l", type=str, default="cropm100_",
+parser.add_argument("-l", "--l", type=str, default="rc_",
                     help="load model name")
-test_b = 100
+test_b = 10
 num_step = 2
 label_file = "5"
 
@@ -183,7 +183,10 @@ else:
     x, t = get_batch(val_dataset, perm[0:test_b], 1)
     acc, l_list, s_list = model.use_model(x, t)
 print(acc)
-test_b = 10
+print("l_list")
+print(l_list)
+print("s_list")
+print(s_list)
 for i in range(test_b):
     save_filename = "buf/attention" + str(i)
     # print(acc[i])
@@ -191,6 +194,7 @@ for i in range(test_b):
     acc_str = ("{:1.8f}".format(acc[i]))
     print(acc_str)
     print(acc[i])
+    print(l_list)
     draw_attention(img, l_list, s_list, i, save=save_filename, acc=acc_str[0:6])
 
 

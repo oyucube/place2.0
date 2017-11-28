@@ -68,8 +68,8 @@ class SAF(BASE):
         self.img_size = img_size
         self.gsize = 20
         self.train = True
-        self.var = 0.015
-        self.vars = 0.015
+        self.var = var
+        self.vars = var
         self.n_unit = n_units
         self.num_class = n_out
         # r determine the rate of position
@@ -95,16 +95,17 @@ class SAF(BASE):
                         xp.argmax(y.data, axis=1) == xp.argmax(target.data, axis=1), 1, 0).reshape((num_lm, 1)).astype(
                         xp.float32)
                     if i != 0:
-                        distance = xp.absolute(l1.data - l.data)
-                        sum_s = s1.data + s.data
+                        distance = xp.absolute(lm.data - rl.data)
+                        sum_s = xp.power(10, sm.data - 1) + xp.power(10, rs - 1)
                         r_a = xp.where(
                             sum_s[:, 0] < distance[:, 0], 0, 1
                         )
                         r_b = xp.where(
                             sum_s[:, 0] < distance[:, 1], 0, 1
                         )
-                        r2 = (r_a * r_b * (sum_s[:, 0] - distance[:, 0]) * (sum_s[:, 0] - distance[:, 1]))\
+                        r2 = (r_a * r_b * (sum_s[:, 0] - distance[:, 0]) * (sum_s[:, 0] - distance[:, 1])) \
                             .reshape((num_lm, 1)).astype(xp.float32)
+
                     r = r - 0.9 * r2
 
                     loss += F.sum((r - b) * (r - b))
@@ -117,7 +118,8 @@ class SAF(BASE):
                     l1, s1, y, b1 = self.recurrent_forward(xm, lm, sm)
                     loss, size_p = self.cul_loss(y, target, l, s, lm, sm)
                     r_buf += size_p
-
+                rl = lm.data
+                rs = sm.data
                 l = l1
                 s = s1
                 b = b1

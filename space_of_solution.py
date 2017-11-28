@@ -92,11 +92,11 @@ parser = argparse.ArgumentParser()
 # * *********************************************    config    ***************************************************** * #
 parser.add_argument("-a", "--am", type=str, default="model_at",
                     help="attention model")
-parser.add_argument("-l", "--l", type=str, default="cropm100_",
+parser.add_argument("-l", "--l", type=str, default="scale",
                     help="load model name")
 test_b = 100
 num_step = 2
-label_file = "5"
+label_file = "15"
 
 # * **************************************************************************************************************** * #
 
@@ -177,10 +177,10 @@ if gpu_id >= 0:
 
 
 nd = xp.array(range(100))
-sample = 10 0
+sample = 100
 det = 10
 space = xp.zeros((sample, det, det))
-for s in range(sample):
+for s in tqdm(range(sample)):
     for i in range(det):
         l2 = xp.array([[0.5, i / det]]).astype("float32")
         for j in range(det):
@@ -188,7 +188,7 @@ for s in range(sample):
             with chainer.function.no_backprop_mode(), chainer.using_config('train', False):
                 x, t = get_batch(val_dataset, xp.array([nd[s]]), 1)
                 space[s][i][j] = model.s2_determin(x, t, l2, s2)
-                print("y:{} s:{} acc:{}".format(i / det, j/det, space[s][i][j]))
+                # print("y:{} s:{} acc:{}".format(i / det, j/det, space[s][i][j]))
 
 
 # 描画
