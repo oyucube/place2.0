@@ -95,7 +95,7 @@ class SAF(BASE):
                         xp.argmax(y.data, axis=1) == xp.argmax(target.data, axis=1), 1, 0).reshape((num_lm, 1)).astype(
                         xp.float32)
                     if i != 0:
-                        distance = xp.absolute(lm.data - rl.data)
+                        distance = xp.absolute(lm.data - rl)
                         sum_s = xp.power(10, sm.data - 1) + xp.power(10, rs - 1)
                         r_a = xp.where(
                             sum_s[:, 0] < distance[:, 0], 0, 1
