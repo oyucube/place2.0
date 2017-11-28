@@ -36,8 +36,8 @@ class BASE(chainer.Chain):
             l_norm_c3=L.BatchNormalization(128),
 
             # 記憶を用いるLSTM部分
-            rnn_1=L.LSTM(n_units, n_units),
-            rnn_2=L.LSTM(n_units, n_units),
+            rnn_1=BNLSTM(n_units, n_units),
+            rnn_2=BNLSTM(n_units, n_units),
 
             # 注意領域を選択するネットワーク
             attention_loc=L.Linear(n_units, 2),
@@ -66,8 +66,8 @@ class BASE(chainer.Chain):
         self.img_size = img_size
         self.gsize = 20
         self.train = True
-        self.var = 0.015
-        self.vars = 0.015
+        self.var = var
+        self.vars = var
         self.n_unit = n_units
         self.num_class = n_out
         # r determine the rate of position
