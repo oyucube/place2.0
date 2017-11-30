@@ -106,7 +106,7 @@ class SAF(BASE):
                         r2 = (r_a * r_b * (sum_s[:, 0] - distance[:, 0]) * (sum_s[:, 0] - distance[:, 1])) \
                             .reshape((num_lm, 1)).astype(xp.float32)
 
-                    r = r - 0.9 * r2
+                    r = r - 0.2 * r2
 
                     loss += F.sum((r - b) * (r - b))
                     k = self.r * (r - b.data)

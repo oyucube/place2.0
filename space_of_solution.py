@@ -196,7 +196,7 @@ for i in range(sample):
     plt.figure()
     plt.xlabel("Size")
     plt.ylabel("position Y")
-    plt.pcolor(space[i], cmap=plt.cm.Blues)
+    plt.pcolor(space[i], cmap=plt.cm.Blues, vmin=0, vmax=1)
     plt.colorbar()
     plt.savefig("buf/space" + str(i) + ".png")
     plt.close()
