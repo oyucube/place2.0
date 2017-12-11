@@ -66,8 +66,8 @@ class SAF(BaseBN):
             lm = Variable(xp.ones((num_lm, 2)).astype(xp.float32) * 0.5)
             sm = Variable(xp.ones((num_lm, 1)).astype(xp.float32))
         else:
-            eps = xp.random.rand(size=l.data.shape).astype(xp.float32)
-            epss = xp.random.rand(size=s.data.shape).astype(xp.float32)
+            eps = xp.random.rand(num_lm, 2).astype(xp.float32)
+            epss = xp.random.rand(num_lm, 1).astype(xp.float32)
             sm = Variable(epss)
             lm = Variable(eps)
         if self.use_gpu:
