@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 mean_list = ["try1", "try2", "try3", "try4", "try5"]
-acc_list = ["scale_train", "scale_test", "change_RL_train", "change_RL_test"]
+acc_list = ["scale_train", "change_RL_train", "change_RL_0.2_train"]
 
 arr = np.zeros((5, 30))
 i = 0
@@ -29,7 +29,9 @@ plt.legend()
 plt.savefig("graph/test.png")
 
 plt.figure()
+plt.rcParams["font.size"] = 18
 plt.xlim([0, 30])
+plt.ylim([0, 1])
 # plt.errorbar(range(30), mean, yerr=std, label="average_test")
 for item in acc_list:
     acc = np.load("graph/" + item + ".npy")

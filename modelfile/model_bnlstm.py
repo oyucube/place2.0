@@ -18,7 +18,7 @@ from modelfile.bnlstm import BNLSTM
 from modelfile.model_at import BASE
 
 
-class SAF(BASE):
+class BaseBN(BASE):
     def __init__(self, n_units=256, n_out=0, img_size=112, var=0.18, n_step=2, gpu_id=-1):
         super(BASE, self).__init__(
             # the size of the inputs to each layer will be inferred
@@ -75,3 +75,7 @@ class SAF(BASE):
         # r determine the rate of position
         self.r = 0.5
         self.n_step = n_step
+
+
+class SAF(BaseBN):
+    pass
