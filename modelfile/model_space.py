@@ -53,7 +53,7 @@ class SAF(BaseBN):
                     accuracy = y.data * target.data
                     return xp.sum(accuracy)
                 else:
-                    xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
+                    xm, lm, sm = self.make_img(x, l, s, num_lm, random=1)
                     l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
                 l = l1
                 s = s1
