@@ -75,3 +75,18 @@ class SAF(BaseBN):
         else:
             xm = make_sampled_image.generate_xm_rgb(lm.data, sm.data, x.data, num_lm, g_size=self.gsize)
         return xm, lm, sm
+
+    def s2_determin(self, x, t, l2, s2):
+        self.reset()
+        n_step = self.n_step
+        num_lm = x.data.shape[0]
+
+        l, s, b1 = self.first_forward(x, num_lm)
+        xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
+        l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
+        # 画像作成の場所を指定
+        s2 = xp.power(10, s2 - 1)
+        xm, lm, sm = self.make_img(x, Variable(l2), Variable(s2), num_lm, random=0)
+        l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
+        accuracy = y.data * t.data
+        return xp.sum(accuracy)

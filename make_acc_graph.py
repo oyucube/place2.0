@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 mean_list = ["try1", "try2", "try3", "try4", "try5"]
-acc_list = ["scale_train", "change_RL_train", "change_RL_0.2_train"]
+acc_list = ["scale_test", "no_locate_info_test", "change_RL_0.2_test"]
 
 arr = np.zeros((5, 30))
 i = 0

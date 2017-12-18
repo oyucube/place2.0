@@ -91,11 +91,11 @@ parser = argparse.ArgumentParser()
 # load model id
 
 # * *********************************************    config    ***************************************************** * #
-parser.add_argument("-a", "--am", type=str, default="model_at",
+parser.add_argument("-a", "--am", type=str, default="model_space",
                     help="attention model")
-parser.add_argument("-l", "--l", type=str, default="scale",
+parser.add_argument("-l", "--l", type=str, default="space_",
                     help="load model name")
-test_b = 100
+test_b = 10
 num_step = 2
 label_file = "15"
 
@@ -178,7 +178,7 @@ if gpu_id >= 0:
 
 
 nd = xp.array(range(100))
-sample = 100
+sample = test_b
 det = 10
 a_size = 0.3
 space1 = xp.zeros((sample, det, det))

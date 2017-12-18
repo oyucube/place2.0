@@ -11,6 +11,69 @@ from modelfile.model_rc import BaseRC
 
 
 class SAF(BaseRC):
+    def __call__(self, x, target, mode):
+        self.reset()
+        n_step = self.n_step
+        num_lm = x.data.shape[0]
+        r2 = 0
+        if mode == 1:
+            r_buf = 0
+            l, s, b = self.first_forward(x, num_lm)
+            for i in range(n_step):
+                if i + 1 == n_step:
+                    xm, lm, sm = self.make_img(x, l, s, num_lm, random=1)
+                    l1, s1, y, b1 = self.recurrent_forward(xm, lm, sm)
+
+                    loss, size_p = self.cul_loss(y, target, l, s, lm, sm)
+                    r_buf += size_p
+                    r = xp.where(
+                        xp.argmax(y.data, axis=1) == xp.argmax(target.data, axis=1), 1, 0).reshape((num_lm, 1)).astype(
+                        xp.float32)
+                    if i != 0:
+                        distance = xp.absolute(lm.data - rl)
+                        sum_s = xp.power(10, sm.data - 1) + xp.power(10, rs - 1)
+                        norm_term = xp.power(10, 2 * (sm.data - 1)) + xp.power(10, 2 * (rs - 1))[:, 0]
+                        r_a = xp.where(
+                            sum_s[:, 0] < distance[:, 0], 0, 1
+                        )
+                        r_b = xp.where(
+                            sum_s[:, 0] < distance[:, 1], 0, 1
+                        )
+                        r2 = (r_a * r_b * (sum_s[:, 0] - distance[:, 0]) * (sum_s[:, 0] - distance[:, 1])) / norm_term \
+                            .reshape((num_lm, 1)).astype(xp.float32)
+
+                    r = r - 0.3 * r2
+
+                    loss += F.sum((r - b) * (r - b))
+                    k = self.r * (r - b.data)
+                    loss += F.sum(k * r_buf)
+
+                    return loss / num_lm
+                else:
+                    xm, lm, sm = self.make_img(x, l, s, num_lm, random=1)
+                    l1, s1, y, b1 = self.recurrent_forward(xm, lm, sm)
+                    loss, size_p = self.cul_loss(y, target, l, s, lm, sm)
+                    r_buf += size_p
+                rl = lm.data
+                rs = sm.data
+                l = l1
+                s = s1
+                b = b1
+
+        elif mode == 0:
+            l, s, b1 = self.first_forward(x, num_lm)
+            for i in range(n_step):
+                if i + 1 == n_step:
+                    xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
+                    l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
+                    accuracy = y.data * target.data
+                    return xp.sum(accuracy)
+                else:
+                    xm, lm, sm = self.make_img(x, l, s, num_lm, random=0)
+                    l1, s1, y, b = self.recurrent_forward(xm, lm, sm)
+                l = l1
+                s = s1
+
     def recurrent_forward(self, xm, lm, sm):
         ls = xp.concatenate([lm.data, sm.data], axis=1)
         hgl = F.relu(self.glimpse_loc(Variable(ls)))
